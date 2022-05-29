@@ -1,38 +1,46 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.13)
+cmake_minimum_required(VERSION 3.13)
 
-PROJECT(libflv)
+project(libflv)
 
-FILE(GLOB include/*.h HEADERS)
+option(BUILD_TEST "build example executable file" OFF)
 
-INCLUDE_DIRECTORIES(include)
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(LIB_NAME "libflv")
+    add_compile_options(/wd4996)
+else ()
+    set(LIB_NAME "flv")
+endif ()
+
+include_directories(include)
 
 # Build LIBFLV
-AUX_SOURCE_DIRECTORY(src SOURCE_FILES)
+aux_source_directory(src SOURCE_FILES)
 
-ADD_LIBRARY(LIBFLV STATIC ${SOURCE_FILES})
-SET_TARGET_PROPERTIES(LIBFLV PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+add_library(libflv STATIC ${SOURCE_FILES})
+set_target_properties(libflv PROPERTIES OUTPUT_NAME ${LIB_NAME})
 
-ADD_LIBRARY(LIBFLV_SHARED SHARED ${SOURCE_FILES})
-SET_TARGET_PROPERTIES(LIBFLV_SHARED PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+add_library(libflv_shared SHARED ${SOURCE_FILES})
+set_target_properties(libflv_shared PROPERTIES OUTPUT_NAME ${LIB_NAME})
 
 # Build test
-IF (BUILD_TEST)
-    AUX_SOURCE_DIRECTORY(test TEST_SOURCE_FILES)
+if (BUILD_TEST)
+    aux_source_directory(test TEST_SOURCE_FILES)
 
-    FOREACH(TEST_FILE ${TEST_SOURCE_FILES})
-        GET_FILENAME_COMPONENT(TEST_BIN ${TEST_FILE} NAME_WE)
+    foreach (TEST_FILE ${TEST_SOURCE_FILES})
+        get_filename_component(TEST_BIN ${TEST_FILE} NAME_WE)
 
-        ADD_EXECUTABLE(${TEST_BIN} ${TEST_FILE})
-        TARGET_LINK_LIBRARIES(${TEST_BIN} LIBFLV)
+        add_executable(${TEST_BIN} ${TEST_FILE})
+        target_link_libraries(${TEST_BIN} libflv)
 
-        INSTALL(TARGETS ${TEST_BIN} DESTINATION ${PROJECT_SOURCE_DIR}/bin)
-        ADD_TEST(NAME ${TEST_BIN} COMMAND ${TEST_BIN})
-    ENDFOREACH()
-ENDIF()
+        install(TARGETS ${TEST_BIN} DESTINATION ${CMAKE_INSTALL_PREFIX}/libflv/bin)
+        add_test(NAME ${TEST_BIN} COMMAND ${TEST_BIN})
+    endforeach ()
+endif ()
 
 # Install library and binary
-INSTALL(TARGETS LIBFLV LIBFLV_SHARED
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(TARGETS libflv libflv_shared
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/libflv/lib
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/libflv/lib)
 
-INSTALL(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/LIBFLV/include)
+file(GLOB HEADERS include/*.h)
+install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/libflv/include)
