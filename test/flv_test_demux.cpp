@@ -23,6 +23,7 @@ int callback(void *param, int codec, const void *data, uint32_t bytes,
     auto file = file_map->at(codec);
 
     switch (codec) {
+        case FLV_VIDEO_AVCC:
         case FLV_VIDEO_H264: {
             file->write(static_cast<const char *>(data), bytes);
             std::cout << "Demux video (h264): " << bytes << std::endl;
@@ -50,6 +51,7 @@ int main()
 
     h264_file.open("test.h264", std::ios::out | std::ios::binary);
     aac_file.open("test.aac", std::ios::out | std::ios::binary);
+    //file_map[FLV_VIDEO_AVCC] = &h264_file;
     file_map[FLV_VIDEO_H264] = &h264_file;
     file_map[FLV_AUDIO_AAC]  = &aac_file;
 

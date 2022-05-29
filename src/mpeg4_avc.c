@@ -10,10 +10,10 @@
 
 enum h264_nal_type_t
 {
-    H264_NAL_IDR = 5,   // Coded slice of an IDR picture
-    H264_NAL_SPS = 7,   // Sequence parameter set
-    H264_NAL_PPS = 8,   // Picture parameter set
-    H264_NAL_AUD = 9,   // Access unit delimiter
+    H264_NAL_IDR = 5, // Coded slice of an IDR picture
+    H264_NAL_SPS = 7, // Sequence parameter set
+    H264_NAL_PPS = 8, // Picture parameter set
+    H264_NAL_AUD = 9, // Access unit delimiter
 };
 
 /*
@@ -60,7 +60,8 @@ aligned(8) class AVCDecoderConfigurationRecord {
 
 int mpeg4_decode_avc_decoder_configuration_record(mpeg4_avc_t *avc, const void *data, uint32_t bytes)
 {
-    int i;
+    int            i;
+    int            read_size = 0;
     const uint8_t *cur, *end;
 
     if (bytes < 7)
@@ -71,49 +72,57 @@ int mpeg4_decode_avc_decoder_configuration_record(mpeg4_avc_t *avc, const void *
 
     assert(cur[0] == 1);
 
-    avc->configuration_version = cur[0];
+    avc->configuration_version  = cur[0];
     avc->avc_profile_indication = cur[1];
-    avc->profile_compatibility = cur[2];
-    avc->avc_level_indication = cur[3];
-    avc->length_size_minus_one = cur[4] & 0x03;
+    avc->profile_compatibility  = cur[2];
+    avc->avc_level_indication   = cur[3];
+    avc->length_size_minus_one  = cur[4] & 0x03;
 
     cur += 5;
 
-    // Sequence Parameter Sets
+    // SPS: Sequence Parameter Sets
     avc->num_of_sequence_parameter_sets = *cur++ & 0x1F;
     for (i = 0; i < avc->num_of_sequence_parameter_sets; i++) {
         if (cur + 2 > end)
             return -1;
 
         avc->sps[i].bytes = (cur[0] << 8) | cur[1];
-        avc->sps[i].data = cur + 2;
-        if (avc->sps[i].data + avc->sps[i].bytes > end)
+        cur += 2;
+
+        if (cur + avc->sps[i].bytes > end || read_size + avc->sps[i].bytes > sizeof(avc->data))
             return -1;
 
-        cur += avc->sps[i].bytes + 2;
+        memmove(avc->data + read_size, cur, avc->sps[i].bytes);
+        avc->sps[i].data = avc->data + read_size;
+        cur += avc->sps[i].bytes;
+        read_size += avc->sps[i].bytes;
     }
 
-    // Picture Parameter Sets
+    // PPS: Picture Parameter Sets
     avc->num_of_picture_parameter_sets = *cur++;
     for (i = 0; i < avc->num_of_picture_parameter_sets; i++) {
         if (cur + 2 > end)
             return -1;
 
         avc->pps[i].bytes = (cur[0] << 8) | cur[1];
-        avc->pps[i].data = cur + 2;
-        if (avc->pps[i].data + avc->pps[i].bytes > end)
+        cur += 2;
+
+        if (cur + avc->pps[i].bytes > end || read_size + avc->sps[i].bytes > sizeof(avc->data))
             return -1;
 
-        cur += avc->pps[i].bytes + 2;
+        memmove(avc->data + read_size, cur, avc->pps[i].bytes);
+        avc->pps[i].data = avc->data + read_size;
+        cur += avc->pps[i].bytes;
+        read_size += avc->pps[i].bytes;
     }
-    
+
     // Extension may not exist
     if (end - cur >= 4) {
         // Extension
         if (100 == avc->avc_profile_indication || 110 == avc->avc_profile_indication ||
             122 == avc->avc_profile_indication || 144 == avc->avc_profile_indication) {
-            avc->chroma_format = cur[0] & 0x03;
-            avc->bit_depth_luma_minus8 = cur[1] & 0x07;
+            avc->chroma_format           = cur[0] & 0x03;
+            avc->bit_depth_luma_minus8   = cur[1] & 0x07;
             avc->bit_depth_chroma_minus8 = cur[2] & 0x07;
 
             cur += 3;
@@ -125,7 +134,7 @@ int mpeg4_decode_avc_decoder_configuration_record(mpeg4_avc_t *avc, const void *
                     return -1;
 
                 avc->sps_ext[i].bytes = (cur[0] << 8) | cur[1];
-                avc->sps_ext[i].data = cur + 2;
+                avc->sps_ext[i].data  = cur + 2;
                 if (avc->sps_ext[i].data + avc->sps_ext[i].bytes > end)
                     return -1;
 
@@ -139,12 +148,19 @@ int mpeg4_decode_avc_decoder_configuration_record(mpeg4_avc_t *avc, const void *
 
 int mpeg4_get_avc_decoder_configuration_record(mpeg4_avc_t *avc, uint8_t annexb, uint8_t *data, uint32_t bytes)
 {
-    int read_size = 0;
-    uint32_t i;
+    int           read_size = 0;
+    uint32_t      i;
     const uint8_t start_code[4] = {0x00, 0x00, 0x00, 0x01};
 
     if (!data)
         return -1;
+
+    //    data[0] = 1;
+    //    data[1] = avc->avc_profile_indication;
+    //    data[2] = avc->profile_compatibility;
+    //    data[3] = avc->avc_level_indication;
+    //    data[4] = 0xFC | (avc->num_of_picture_parameter_sets - 1);
+    //    read_size += 5;
 
     for (i = 0; i < avc->num_of_sequence_parameter_sets; i++) {
         if (read_size + avc->sps[i].bytes + (annexb ? 4 : 0) > (int) bytes)
@@ -178,21 +194,21 @@ int mpeg4_get_avc_decoder_configuration_record(mpeg4_avc_t *avc, uint8_t annexb,
 int mpeg4_avcc_to_annexb(mpeg4_avc_t *avc, const void *in_data, uint32_t in_bytes,
                          uint8_t *out_data, uint32_t out_bytes)
 {
-    uint32_t nalu_size, read_size, i;
-    uint8_t *dst, sps_pps_flag;
+    uint32_t       nalu_size, read_size, i;
+    uint8_t       *dst, sps_pps_flag;
     const uint8_t *src, *end;
-    const uint8_t start_code[4] = {0x00, 0x00, 0x00, 0x01};
+    const uint8_t  start_code[4] = {0x00, 0x00, 0x00, 0x01};
 
     sps_pps_flag = 0;
-    src = in_data;
-    end = src + in_bytes;
-    dst = out_data;
+    src          = in_data;
+    end          = src + in_bytes;
+    dst          = out_data;
 
     // lengthSizeMinusOne: indicates the length in bytes of the NALUnitLength field in an AVC video
     // sample or AVC parameter set sample of the associated stream minus one. For example, a size of
     // one byte is indicated with a value of 0. The value of this field shall be one of 0, 1, or 3
     // corresponding to a length encoded with 1, 2, or 4 bytes, respectively.
-    for ( ; src + avc->length_size_minus_one + 1 < end; ) {
+    for (; src + avc->length_size_minus_one + 1 < end;) {
         for (i = 0, nalu_size = 0; i < (uint32_t) (avc->length_size_minus_one + 1); i++)
             nalu_size = (nalu_size << 8) | src[i];
 
