@@ -29,4 +29,4 @@ int flv_muxer_avc(flv_muxer_t *muxer, const void *data, uint32_t bytes, uint32_t
 }
 #endif
 
-#endif //LIBFLV_FLV_MUXER_H
+#endif // LIBFLV_FLV_MUXER_H

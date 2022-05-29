@@ -8,25 +8,26 @@
 #include "mpeg4_aac.h"
 #include "mpeg4_avc.h"
 
-#include <stdlib.h>
 #include <memory.h>
+#include <stdlib.h>
 
 struct flv_demuxer_t
 {
-    void *param;
-    flv_demuxer_handler handler;
+    void    *param;
     uint8_t *buffer;
     uint32_t capacity;
+
+    flv_demuxer_handler handler;
 
     union
     {
         mpeg4_avc_t avc;
     } video;
 
-     union
-     {
-         struct mpeg4_aac_t aac;
-     } audio;
+    union
+    {
+        struct mpeg4_aac_t aac;
+    } audio;
 };
 
 flv_demuxer_t *flv_demuxer_create(flv_demuxer_handler handler, void *param)
@@ -39,7 +40,7 @@ flv_demuxer_t *flv_demuxer_create(flv_demuxer_handler handler, void *param)
 
     memset(demuxer, 0, sizeof(struct flv_demuxer_t));
     demuxer->handler = handler;
-    demuxer->param = param;
+    demuxer->param   = param;
 
     return demuxer;
 }
@@ -62,7 +63,7 @@ static int flv_demuxer_check_and_alloc(flv_demuxer_t *demuxer, uint32_t bytes)
         if (!ptr)
             return -1;
 
-        demuxer->buffer = (uint8_t *) ptr;
+        demuxer->buffer   = (uint8_t *) ptr;
         demuxer->capacity = bytes;
     }
 
@@ -72,7 +73,7 @@ static int flv_demuxer_check_and_alloc(flv_demuxer_t *demuxer, uint32_t bytes)
 static int flv_demuxer_audio(flv_demuxer_t *demuxer, const uint8_t *data, uint32_t bytes, uint32_t timestamp)
 {
     flv_audio_tag_header_t audio_header;
-    int read_size;
+    int                    read_size;
 
     read_size = flv_audio_tag_header_read(&audio_header, data, bytes);
     if (-1 == read_size)
@@ -104,7 +105,7 @@ static int flv_demuxer_audio(flv_demuxer_t *demuxer, const uint8_t *data, uint32
 static int flv_demuxer_video(flv_demuxer_t *demuxer, const uint8_t *data, uint32_t bytes, uint32_t timestamp)
 {
     flv_video_tag_header_t video_header;
-    int read_size;
+    int                    read_size;
 
     read_size = flv_video_tag_header_read(&video_header, data, bytes);
     if (-1 == read_size)
@@ -161,7 +162,7 @@ int flv_demuxer_input(flv_demuxer_t *demuxer, int tag_type, const void *data, ui
             return flv_demuxer_video(demuxer, data, bytes, timestamp);
 
         case FLV_SCRIPT:
-//            return flv_demuxer_script();
+            //            return flv_demuxer_script();
         default:
             return -1;
     }

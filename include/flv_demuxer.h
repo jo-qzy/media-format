@@ -41,4 +41,4 @@ int flv_demuxer_input(flv_demuxer_t *demuxer, int tag_type, const void *data, ui
 }
 #endif
 
-#endif //LIBFLV_FLV_DEMUXER_H
+#endif // LIBFLV_FLV_DEMUXER_H

@@ -30,12 +30,12 @@ AudioSpecificConfig ()
 {
     audioObjectType;								5 uimsbf
     if (audioObjectType == 31) {
-	    audioObjectType = 32 + audioObjectTypeExt;	6 uimsbf
+        audioObjectType = 32 + audioObjectTypeExt;	6 uimsbf
     }
 
     samplingFrequencyIndex;							4 bslbf
     if ( samplingFrequencyIndex == 0xf ) {
-	    samplingFrequency;							24 uimsbf
+        samplingFrequency;							24 uimsbf
     }
     channelConfiguration;							4 bslbf
 */
@@ -47,9 +47,9 @@ int mpeg4_decode_audio_specific_config(mpeg4_aac_t *aac, const void *data, uint3
     if (bytes < 2)
         return -1;
 
-    aac->audio_object_type = (cur[0] >> 3) & 0x1F;
-    aac->sampling_frequency_index = ((cur[0] & 0x07) << 1) | ((cur[1] >>7) & 0x01);
-    aac->channel_configuration = (cur[1] >> 3) & 0x0F;
+    aac->audio_object_type        = (cur[0] >> 3) & 0x1F;
+    aac->sampling_frequency_index = ((cur[0] & 0x07) << 1) | ((cur[1] >> 7) & 0x01);
+    aac->channel_configuration    = (cur[1] >> 3) & 0x0F;
 
     aac->sampling_frequency = mpeg4_get_audio_sample_frequency(aac->sampling_frequency_index);
 

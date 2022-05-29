@@ -5,15 +5,15 @@
 #include "flv_reader.h"
 #include "flv_header.h"
 
+#include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory.h>
 
 struct flv_reader_t
 {
-    void               *param;
-    FILE               *file;
-    flv_reader_handler  read;
+    void              *param;
+    FILE              *file;
+    flv_reader_handler read;
 };
 
 static int flv_reader_read_file(void *param, void *buf, uint32_t len)
@@ -23,8 +23,8 @@ static int flv_reader_read_file(void *param, void *buf, uint32_t len)
 
 static int flv_reader_read_header(flv_reader_t *reader)
 {
-    uint8_t buffer[FLV_HEADER_SIZE];
-    uint32_t previous_size;
+    uint8_t      buffer[FLV_HEADER_SIZE];
+    uint32_t     previous_size;
     flv_header_t header;
 
     if (FLV_HEADER_SIZE != reader->read(reader->param, buffer, FLV_HEADER_SIZE))
@@ -73,8 +73,8 @@ flv_reader_t *flv_reader_create(const char *file, flv_reader_handler handler, vo
         }
 
         reader->param = flv_file;
-        reader->file = flv_file;
-        reader->read = flv_reader_read_file;
+        reader->file  = flv_file;
+        reader->read  = flv_reader_read_file;
     }
 
     if (flv_reader_read_header(reader) != 0) {
@@ -98,9 +98,9 @@ int flv_reader_read(flv_reader_t *reader, int *tag_type, uint32_t *timestamp, ui
                     void *buffer, uint32_t bytes)
 {
     flv_tag_t tag;
-    uint8_t tag_header[FLV_TAG_HEADER_SIZE];
-    uint32_t previous_size;
-    int read_size;
+    uint8_t   tag_header[FLV_TAG_HEADER_SIZE];
+    uint32_t  previous_size;
+    int       read_size;
 
     read_size = reader->read(reader->param, tag_header, FLV_TAG_HEADER_SIZE);
     if (FLV_TAG_HEADER_SIZE != read_size)
@@ -120,8 +120,8 @@ int flv_reader_read(flv_reader_t *reader, int *tag_type, uint32_t *timestamp, ui
     if (FLV_PREVIOUS_TAG_LENGTH != read_size)
         return read_size < 0 ? read_size : 0;
 
-    *taglen = tag.data_size;
-    *tag_type = tag.tag_type;
+    *taglen    = tag.data_size;
+    *tag_type  = tag.tag_type;
     *timestamp = tag.timestamp;
 
     if (FLV_PREVIOUS_TAG_LENGTH !=

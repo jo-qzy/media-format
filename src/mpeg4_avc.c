@@ -155,13 +155,6 @@ int mpeg4_get_avc_decoder_configuration_record(mpeg4_avc_t *avc, uint8_t annexb,
     if (!data)
         return -1;
 
-    //    data[0] = 1;
-    //    data[1] = avc->avc_profile_indication;
-    //    data[2] = avc->profile_compatibility;
-    //    data[3] = avc->avc_level_indication;
-    //    data[4] = 0xFC | (avc->num_of_picture_parameter_sets - 1);
-    //    read_size += 5;
-
     for (i = 0; i < avc->num_of_sequence_parameter_sets; i++) {
         if (read_size + avc->sps[i].bytes + (annexb ? 4 : 0) > (int) bytes)
             return -1;

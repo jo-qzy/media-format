@@ -25,12 +25,12 @@ typedef struct flv_writer_handler_t
 
 typedef struct flv_writer_t
 {
-    void   *param;
+    void *param;
 
     int (*on_write)(void *param, flv_vec_t *vec, uint32_t len);
 } flv_writer_t;
 
-flv_writer_t *flv_writer_create(void* param, int audio, int video, flv_writer_handler_t *handler);
+flv_writer_t *flv_writer_create(void *param, int audio, int video, flv_writer_handler_t *handler);
 
 void flv_writer_destroy(flv_writer_t *flv);
 
@@ -40,4 +40,4 @@ int flv_writer_input(flv_writer_t *flv, int type, uint32_t timestamp, const void
 }
 #endif
 
-#endif //LIBFLV_FLV_WIRTER_H
+#endif // LIBFLV_FLV_WIRTER_H

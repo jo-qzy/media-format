@@ -5,8 +5,8 @@
 #ifndef LIBFLV_FLV_READER_H
 #define LIBFLV_FLV_READER_H
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -43,4 +43,4 @@ int flv_reader_read(flv_reader_t *reader, int *tag_type, uint32_t *timestamp, ui
 }
 #endif
 
-#endif //LIBFLV_FLV_READER_H
+#endif // LIBFLV_FLV_READER_H

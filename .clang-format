@@ -11,7 +11,7 @@ AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Empty
-AllowShortCaseLabelsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: All
@@ -27,6 +27,7 @@ BraceWrapping:
   AfterFunction: true
   AfterNamespace: true
   AfterUnion: true
+  AfterStruct: true
   BeforeCatch: false
   BeforeElse: false
   IndentBraces: false

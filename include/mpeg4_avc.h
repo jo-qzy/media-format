@@ -10,7 +10,8 @@
 
 // ISO/IEC 14496-15:2010(E) 5.2.4.1.1
 // AVC Decoder Configuration Record
-typedef struct mpeg4_avc_t {
+typedef struct mpeg4_avc_t
+{
     uint8_t configuration_version;
     uint8_t avc_profile_indication;
     uint8_t profile_compatibility;
@@ -19,12 +20,14 @@ typedef struct mpeg4_avc_t {
     uint8_t num_of_sequence_parameter_sets : 5;
     uint8_t num_of_picture_parameter_sets;
 
-    struct picture_parameter_sets_t {
+    struct picture_parameter_sets_t
+    {
         uint16_t       bytes;
         const uint8_t *data;
     } pps[31];
 
-    struct sequence_parameter_sets_t {
+    struct sequence_parameter_sets_t
+    {
         uint16_t       bytes;
         const uint8_t *data;
     } sps[255];
@@ -35,7 +38,8 @@ typedef struct mpeg4_avc_t {
     uint8_t bit_depth_chroma_minus8 : 3;
     uint8_t num_of_sequence_parameter_set_ext_length;
 
-    struct sequence_parameter_set_ext_t {
+    struct sequence_parameter_set_ext_t
+    {
         uint16_t       bytes;
         const uint8_t *data;
     } sps_ext[255];

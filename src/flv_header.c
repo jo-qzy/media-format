@@ -45,10 +45,10 @@ static inline uint8_t *flv_write_uint32_be(uint8_t *ptr, const uint8_t *end, uin
     if (ptr + 4 > end)
         return NULL;
 
-    ptr[0] = (uint8_t)((val >> 24) & 0xFF);
-    ptr[1] = (uint8_t)((val >> 16) & 0xFF);
-    ptr[2] = (uint8_t)((val >> 8) & 0xFF);
-    ptr[3] = (uint8_t)(val & 0xFF);
+    ptr[0] = (uint8_t) ((val >> 24) & 0xFF);
+    ptr[1] = (uint8_t) ((val >> 16) & 0xFF);
+    ptr[2] = (uint8_t) ((val >> 8) & 0xFF);
+    ptr[3] = (uint8_t) (val & 0xFF);
 
     return ptr + 4;
 }
@@ -62,8 +62,8 @@ int flv_header_read(flv_header_t *header, const uint8_t *buf, uint32_t len)
 
     memmove(header->FLV, buf, 3);
     header->version = buf[3];
-    header->audio = (buf[4] >> 2) & 0x01;
-    header->video = buf[4] & 0x01;
+    header->audio   = (buf[4] >> 2) & 0x01;
+    header->video   = buf[4] & 0x01;
     flv_read_uint32_be(buf + 5, buf + len, &header->data_offset);
 
     if (1 == header->version && FLV_HEADER_SIZE != header->data_offset)
@@ -72,7 +72,7 @@ int flv_header_read(flv_header_t *header, const uint8_t *buf, uint32_t len)
     return FLV_HEADER_SIZE;
 }
 
-int flv_header_write(int audio, int video, uint8_t* buf, uint32_t len)
+int flv_header_write(int audio, int video, uint8_t *buf, uint32_t len)
 {
     if (!buf || len < FLV_HEADER_SIZE) {
         return -1;
@@ -98,7 +98,7 @@ int flv_tag_read(flv_tag_t *tag, const uint8_t *buf, uint32_t len)
 
     end = buf + len;
 
-    tag->filter = (buf[0] >> 5) & 0x01;
+    tag->filter   = (buf[0] >> 5) & 0x01;
     tag->tag_type = buf[0] & 0x1F;
     flv_read_uint24_be(buf + 1, end, &tag->data_size);
     flv_read_uint24_be(buf + 4, end, &tag->timestamp);
@@ -142,9 +142,9 @@ int flv_audio_tag_header_read(flv_audio_tag_header_t *audio_tag, const uint8_t *
         return -1;
 
     audio_tag->sound_format = (buf[0] >> 4) & 0x0F;
-    audio_tag->sound_rate = (buf[0] >> 2) & 0x03;
-    audio_tag->sound_size = (buf[0] >> 1) & 0x01;
-    audio_tag->sound_type = buf[0] & 0x01;
+    audio_tag->sound_rate   = (buf[0] >> 2) & 0x03;
+    audio_tag->sound_size   = (buf[0] >> 1) & 0x01;
+    audio_tag->sound_type   = buf[0] & 0x01;
 
     assert(audio_tag->sound_format <= 15 && 9 != audio_tag->sound_format && 13 != audio_tag->sound_format);
 
@@ -192,7 +192,7 @@ int flv_video_tag_header_read(flv_video_tag_header_t *video_tag, const uint8_t *
     }
 
     video_tag->frame_type = (buf[0] >> 4) & 0x0F;
-    video_tag->codec_id = buf[0] & 0x0F;
+    video_tag->codec_id   = buf[0] & 0x0F;
 
     assert(video_tag->frame_type <= 5 && video_tag->codec_id >= 2 && video_tag->codec_id <= 7);
 
@@ -205,7 +205,7 @@ int flv_video_tag_header_read(flv_video_tag_header_t *video_tag, const uint8_t *
 
         // Transfer Signed INT24 to Signed INT32
         flv_read_uint24_be(buf + 2, buf + len, &composition_time_offset);
-        composition_time_offset = (composition_time_offset + 0xFF800000) ^ 0xFF800000;
+        composition_time_offset            = (composition_time_offset + 0xFF800000) ^ 0xFF800000;
         video_tag->composition_time_offset = (int32_t) composition_time_offset;
 
         return 5;
