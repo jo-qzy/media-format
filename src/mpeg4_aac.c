@@ -61,8 +61,8 @@ int mpeg4_decode_audio_specific_config(mpeg4_aac_t *aac, const void *data, uint3
     return -1;
 }
 
-int mpeg4_aac_raw_to_adts(mpeg4_aac_t *aac, const void *in_data, uint32_t in_bytes,
-                          uint8_t *out_data, uint32_t out_bytes)
+int mpeg4_aac_raw_to_adts(mpeg4_aac_t *aac, const void *in_data, uint32_t in_bytes, uint8_t *out_data,
+                          uint32_t out_bytes)
 {
     int adts_length = (int) (in_bytes + 7);
 

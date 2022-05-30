@@ -184,8 +184,8 @@ int mpeg4_get_avc_decoder_configuration_record(mpeg4_avc_t *avc, uint8_t annexb,
     return read_size;
 }
 
-int mpeg4_avcc_to_annexb(mpeg4_avc_t *avc, const void *in_data, uint32_t in_bytes,
-                         uint8_t *out_data, uint32_t out_bytes)
+int mpeg4_avcc_to_annexb(mpeg4_avc_t *avc, const void *in_data, uint32_t in_bytes, uint8_t *out_data,
+                         uint32_t out_bytes)
 {
     uint32_t       nalu_size, read_size, i;
     uint8_t       *dst, sps_pps_flag;

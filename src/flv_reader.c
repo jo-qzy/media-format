@@ -94,8 +94,8 @@ void flv_reader_destroy(flv_reader_t *reader)
     free(reader);
 }
 
-int flv_reader_read(flv_reader_t *reader, int *tag_type, uint32_t *timestamp, uint32_t *taglen,
-                    void *buffer, uint32_t bytes)
+int flv_reader_read(flv_reader_t *reader, int *tag_type, uint32_t *timestamp, uint32_t *taglen, void *buffer,
+                    uint32_t bytes)
 {
     flv_tag_t tag;
     uint8_t   tag_header[FLV_TAG_HEADER_SIZE];

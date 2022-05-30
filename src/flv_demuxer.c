@@ -93,8 +93,8 @@ static int flv_demuxer_audio(flv_demuxer_t *demuxer, const uint8_t *data, uint32
                 read_size = mpeg4_aac_raw_to_adts(&demuxer->audio.aac, data + read_size, bytes - read_size,
                                                   demuxer->buffer, demuxer->capacity);
 
-                return demuxer->handler(demuxer->param, FLV_AUDIO_AAC, demuxer->buffer, read_size, timestamp,
-                                        timestamp, 0);
+                return demuxer->handler(demuxer->param, FLV_AUDIO_AAC, demuxer->buffer, read_size, timestamp, timestamp,
+                                        0);
             }
     }
 
@@ -121,8 +121,8 @@ static int flv_demuxer_video(flv_demuxer_t *demuxer, const uint8_t *data, uint32
                                                                         bytes - read_size))
                     return -1;
 
-                read_size = mpeg4_get_avc_decoder_configuration_record(&demuxer->video.avc, 0,
-                                                                       demuxer->buffer, demuxer->capacity);
+                read_size = mpeg4_get_avc_decoder_configuration_record(&demuxer->video.avc, 0, demuxer->buffer,
+                                                                       demuxer->capacity);
                 if (read_size < 0)
                     return -1;
 
@@ -142,8 +142,8 @@ static int flv_demuxer_video(flv_demuxer_t *demuxer, const uint8_t *data, uint32
     }
 
     return demuxer->handler(demuxer->param, video_header.codec_id, data + read_size, bytes - read_size,
-                            timestamp + video_header.composition_time_offset,
-                            timestamp, (FLV_KEY_FRAME == video_header.frame_type) ? 1 : 0);
+                            timestamp + video_header.composition_time_offset, timestamp,
+                            (FLV_KEY_FRAME == video_header.frame_type) ? 1 : 0);
 }
 
 int flv_demuxer_input(flv_demuxer_t *demuxer, int tag_type, const void *data, uint32_t bytes, uint32_t timestamp)
@@ -155,15 +155,12 @@ int flv_demuxer_input(flv_demuxer_t *demuxer, int tag_type, const void *data, ui
         return -22;
 
     switch (tag_type) {
-        case FLV_AUDIO:
-            return flv_demuxer_audio(demuxer, data, bytes, timestamp);
+        case FLV_AUDIO: return flv_demuxer_audio(demuxer, data, bytes, timestamp);
 
-        case FLV_VIDEO:
-            return flv_demuxer_video(demuxer, data, bytes, timestamp);
+        case FLV_VIDEO: return flv_demuxer_video(demuxer, data, bytes, timestamp);
 
         case FLV_SCRIPT:
             //            return flv_demuxer_script();
-        default:
-            return -1;
+        default: return -1;
     }
 }
