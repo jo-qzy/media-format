@@ -21,11 +21,10 @@ typedef struct flv_reader_t flv_reader_t;
 /// @return 0-success, other-error
 typedef int (*flv_reader_handler)(void *param, void *buf, uint32_t len);
 
-/// @param[in] file the flv file name need to be read, can be NULL
-/// @param[in] handler read flv use handler, not use default , can be NULL
+/// @param[in] handler flv data read handler, must available
 /// @param[in] param user-defined parameter
 /// @return NULL-error, other-success
-flv_reader_t *flv_reader_create(const char *file, flv_reader_handler handler, void *param);
+flv_reader_t *flv_reader_create(flv_reader_handler handler, void *param);
 
 void flv_reader_destroy(flv_reader_t *reader);
 

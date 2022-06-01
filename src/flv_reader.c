@@ -12,14 +12,8 @@
 struct flv_reader_t
 {
     void              *param;
-    FILE              *file;
     flv_reader_handler read;
 };
-
-static int flv_reader_read_file(void *param, void *buf, uint32_t len)
-{
-    return (int) fread(buf, 1, len, param);
-}
 
 static int flv_reader_read_header(flv_reader_t *reader)
 {
@@ -50,32 +44,21 @@ static int flv_reader_read_header(flv_reader_t *reader)
     return 0;
 }
 
-flv_reader_t *flv_reader_create(const char *file, flv_reader_handler handler, void *param)
+flv_reader_t *flv_reader_create(flv_reader_handler handler, void *param)
 {
     struct flv_reader_t *reader;
 
+    if (!handler)
+        return NULL;
+
     reader = (struct flv_reader_t *) malloc(sizeof(struct flv_reader_t));
-    if (NULL == reader)
+    if (!reader)
         return NULL;
 
     memset(reader, 0, sizeof(struct flv_reader_t));
 
     reader->param = param;
-
-    if (handler)
-        reader->read = handler;
-    else {
-        FILE *flv_file = fopen(file, "rb");
-        if (!flv_file) {
-            flv_reader_destroy(reader);
-
-            return NULL;
-        }
-
-        reader->param = flv_file;
-        reader->file  = flv_file;
-        reader->read  = flv_reader_read_file;
-    }
+    reader->read  = handler;
 
     if (flv_reader_read_header(reader) != 0) {
         flv_reader_destroy(reader);
@@ -88,9 +71,6 @@ flv_reader_t *flv_reader_create(const char *file, flv_reader_handler handler, vo
 
 void flv_reader_destroy(flv_reader_t *reader)
 {
-    if (reader->file)
-        fclose(reader->file);
-
     free(reader);
 }
 

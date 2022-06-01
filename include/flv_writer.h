@@ -2,8 +2,8 @@
 // Created by BoringWednesday on 2021/8/9.
 //
 
-#ifndef LIBFLV_FLV_WIRTER_H
-#define LIBFLV_FLV_WIRTER_H
+#ifndef LIBFLV_FLV_WRITER_H
+#define LIBFLV_FLV_WRITER_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -40,4 +40,4 @@ int flv_writer_input(flv_writer_t *flv, int type, uint32_t timestamp, const void
 }
 #endif
 
-#endif // LIBFLV_FLV_WIRTER_H
+#endif // LIBFLV_FLV_WRITER_H
