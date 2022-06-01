@@ -7,11 +7,12 @@ AlignConsecutiveDeclarations: Consecutive
 AlignConsecutiveMacros: Consecutive
 AlignOperands: Align
 AlignTrailingComments: true
+AlignEscapedNewlines: Left
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: Empty
-AllowShortCaseLabelsOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: All

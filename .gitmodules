@@ -1,0 +1,3 @@
+[submodule "deps/libamf"]
+	path = deps/libamf
+	url = https://github.com/jo-qzy/libamf.git
