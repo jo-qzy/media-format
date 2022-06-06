@@ -124,13 +124,15 @@ static int flv_demuxer_video(flv_demuxer_t *demuxer, const uint8_t *data, uint32
                                                                         bytes - read_size))
                     return -1;
 
-                read_size = mpeg4_get_avc_decoder_configuration_record(&demuxer->video.avc, 0, demuxer->buffer,
-                                                                       demuxer->capacity);
-                if (read_size < 0)
-                    return -1;
+                return 0;
 
-                return demuxer->handler(demuxer->param, FLV_VIDEO_AVCC, demuxer->buffer, read_size,
-                                        timestamp + video_header.composition_time_offset, timestamp, 0);
+                // read_size = mpeg4_get_avc_decoder_configuration_record(&demuxer->video.avc, 0, demuxer->buffer,
+                //                                                        demuxer->capacity);
+                // if (read_size < 0)
+                //     return -1;
+                //
+                // return demuxer->handler(demuxer->param, FLV_VIDEO_AVCC, demuxer->buffer, read_size,
+                //                         timestamp + video_header.composition_time_offset, timestamp, 0);
             } else if (FLV_MEDIA_PACKET == video_header.avc_packet_type) {
                 // H.264 stream is AVCC format in flv, need transfer to Annex-B format
                 read_size = mpeg4_avcc_to_annexb(&demuxer->video.avc, data + read_size, bytes - read_size,

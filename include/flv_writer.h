@@ -14,23 +14,15 @@ extern "C" {
 
 #include "flv.h"
 
-typedef struct flv_writer_handler_t
-{
-    /// @param[in] param User parameters
-    /// @param[in] vec flv data vector
-    /// @param[in] len flv data length
-    /// @return 0-ok, other-error
-    int (*on_write)(void *param, flv_vec_t *vec, uint32_t len);
-} flv_writer_handler_t;
+typedef struct flv_writer_t flv_writer_t;
 
-typedef struct flv_writer_t
-{
-    void *param;
+/// @param[in] param User parameters
+/// @param[in] vec flv data vector
+/// @param[in] len flv data length
+/// @return 0-ok, other-error
+typedef int (*flv_writer_handler)(void *param, flv_vec_t *vec, uint32_t len);
 
-    int (*on_write)(void *param, flv_vec_t *vec, uint32_t len);
-} flv_writer_t;
-
-flv_writer_t *flv_writer_create(void *param, int audio, int video, flv_writer_handler_t *handler);
+flv_writer_t *flv_writer_create(void *param, int audio, int video, flv_writer_handler handler);
 
 void flv_writer_destroy(flv_writer_t *flv);
 

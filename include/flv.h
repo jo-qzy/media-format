@@ -33,8 +33,8 @@ typedef struct flv_handler_t
 
 typedef struct flv_vec_t
 {
-    const void *data;
-    uint32_t    bytes;
+    const uint8_t *data;
+    uint32_t       bytes;
 } flv_vec_t;
 
 #endif // LIBFLV_FLV_H

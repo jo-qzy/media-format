@@ -11,15 +11,9 @@
 extern "C" {
 #endif
 
-typedef struct flv_muxer_handler_t
-{
-    void *param;
-} flv_muxer_handler_t;
+typedef struct flv_muxer_t flv_muxer_t;
 
-typedef struct flv_muxer_t
-{
-    void *param;
-} flv_muxer_t;
+typedef int (*flv_muxer_handler)(void* param, int type, const void* data, size_t bytes, uint32_t timestamp);
 
 int flv_muxer_aac(flv_muxer_t *muxer, const void *data, uint32_t bytes, uint32_t pts, uint32_t dts);
 

@@ -11,6 +11,12 @@
 #define FLV_HEADER_LENGTH     9
 #define FLV_TAG_HEADER_LENGTH 11
 
+typedef struct flv_writer_t
+{
+    void              *param;
+    flv_writer_handler write;
+} flv_writer_t;
+
 static int flv_write_header(flv_writer_t *flv, int audio, int video)
 {
     flv_vec_t vec;
@@ -22,10 +28,10 @@ static int flv_write_header(flv_writer_t *flv, int audio, int video)
     vec.data  = header;
     vec.bytes = FLV_HEADER_LENGTH + 4;
 
-    return flv->on_write(flv->param, &vec, 1);
+    return flv->write(flv->param, &vec, 1);
 }
 
-flv_writer_t *flv_writer_create(void *param, int audio, int video, flv_writer_handler_t *handler)
+flv_writer_t *flv_writer_create(void *param, int audio, int video, flv_writer_handler handler)
 {
     flv_writer_t *flv_writer;
 
@@ -34,8 +40,8 @@ flv_writer_t *flv_writer_create(void *param, int audio, int video, flv_writer_ha
         return NULL;
     }
 
-    flv_writer->param    = param;
-    flv_writer->on_write = handler->on_write;
+    flv_writer->param = param;
+    flv_writer->write = handler;
 
     if (0 != flv_write_header(flv_writer, audio, video)) {
         flv_writer_destroy(flv_writer);
@@ -73,5 +79,5 @@ int flv_writer_input(flv_writer_t *flv, int type, uint32_t timestamp, const void
     vec[2].data  = tag_buf + FLV_TAG_HEADER_LENGTH;
     vec[2].bytes = 4;
 
-    return flv->on_write(flv->param, vec, 3);
+    return flv->write(flv->param, vec, 3);
 }
