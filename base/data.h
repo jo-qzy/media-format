@@ -7,6 +7,7 @@
 
 
 #include <stdint.h>
+#include <stddef.h>
 
 typedef struct vec_t
 {
