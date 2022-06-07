@@ -22,8 +22,8 @@ typedef struct flv_demuxer_t flv_demuxer_t;
 /// @param[in] dts audio/video decoding timestamp
 /// @param[in] flags 1-video keyframe, other-undefined
 /// @return 0-ok, other-error
-typedef int (*flv_demuxer_handler)(void *param, int codec, const void *data, uint32_t bytes,
-                                   uint32_t pts, uint32_t dts, int flags);
+typedef int (*flv_demuxer_handler)(void *param, int codec, const void *data, uint32_t bytes, uint32_t pts, uint32_t dts,
+                                   int flags);
 
 flv_demuxer_t *flv_demuxer_create(flv_demuxer_handler handler, void *param);
 
