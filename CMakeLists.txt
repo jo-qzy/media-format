@@ -1,50 +1,55 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.12)
 
-project(libflv)
+project(mfa)
 
-option(BUILD_TEST "build example executable file" OFF)
+option(ENABLE_FLV "enable flv" ON)
+option(BUILD_STATIC "build static library" ON)
+option(BUILD_SHARED "build shared library" OFF)
+option(BUILD_DEMO "build example executable file" ON)
+option(BUILD_TEST "build test executable file" OFF)
 
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set(LIBFLV_NAME "libflv")
-    add_compile_options(/wd4996)
-else ()
-    set(LIBFLV_NAME "flv")
+set(MFA_OBJS)
+set(MFA_HEADER_DIRS)
+set(MFA_TEST_OBJS)
+set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME})
+
+include_directories(.)
+
+# build base
+add_subdirectory(base)
+
+if (ENABLE_FLV)
+    add_subdirectory(flv)
+    list(APPEND MFA_HEADER_DIRS flv)
 endif ()
 
-# Build libamf
-add_subdirectory(deps/libamf)
+# build libmedia
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(MFA_LIBRARY lib${PROJECT_NAME})
+    add_compile_options(/wd4996)
+else ()
+    set(MFA_LIBRARY ${PROJECT_NAME})
+endif ()
 
-include_directories(include)
-include_directories(deps/libamf/include)
+if (BUILD_SHARED)
+    add_library(${MFA_LIBRARY} SHARED ${MFA_OBJS})
+else()
+    add_library(${MFA_LIBRARY} STATIC ${MFA_OBJS})
+endif()
 
-# Build LIBFLV
-aux_source_directory(src SOURCE_FILES)
-
-add_library(libflv STATIC ${SOURCE_FILES})
-set_target_properties(libflv PROPERTIES OUTPUT_NAME ${LIBFLV_NAME})
-
-add_library(libflv_shared SHARED ${SOURCE_FILES})
-set_target_properties(libflv_shared PROPERTIES OUTPUT_NAME ${LIBFLV_NAME})
-
-# Build test
 if (BUILD_TEST)
-    aux_source_directory(test TEST_SOURCE_FILES)
-
-    foreach (TEST_FILE ${TEST_SOURCE_FILES})
-        get_filename_component(TEST_BIN ${TEST_FILE} NAME_WE)
-
-        add_executable(${TEST_BIN} ${TEST_FILE})
-        target_link_libraries(${TEST_BIN} libflv)
-
-        install(TARGETS ${TEST_BIN} DESTINATION ${CMAKE_INSTALL_PREFIX}/libflv/bin)
-        add_test(NAME ${TEST_BIN} COMMAND ${TEST_BIN})
-    endforeach ()
+    set(MFA_TEST ${PROJECT_NAME}_test)
+    add_executable(${MFA_TEST} test/test.cpp ${MFA_TEST_OBJS})
+    target_link_libraries(${MFA_TEST} ${MFA_LIBRARY})
+    install(TARGETS ${MFA_TEST}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 endif ()
 
 # Install library and binary
-install(TARGETS libflv libflv_shared
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/libflv/lib
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/libflv/lib)
-
-file(GLOB HEADERS include/*.h)
-install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/libflv/include)
+install(TARGETS ${MFA_LIBRARY})
+install(DIRECTORY ${MFA_HEADER_DIRS}
+    TYPE INCLUDE
+    FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "test" EXCLUDE
+    )

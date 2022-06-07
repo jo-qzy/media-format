@@ -1,3 +1,3 @@
-# libflv
+# Media Format API
 
-A simple flv demux and mux library.
+include some media mux/demux
