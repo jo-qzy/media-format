@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include <base/data.h>
+#include <core/mfa_core.h>
 #include <flv/amf0.h>
 #include <flv/amf3.h>
 
@@ -21,7 +21,7 @@ static inline uint8_t *amf0_write_string16(uint8_t *ptr, const uint8_t *end, con
     if (ptr + 2 + length > end || !str)
         return NULL;
 
-    ptr = write_uint16_be(ptr, end, (uint16_t) length);
+    ptr = mfa_write_uint16(ptr, end, (uint16_t) length);
     memcpy(ptr, str, length);
 
     return ptr + length;
@@ -32,7 +32,7 @@ static inline uint8_t *amf0_write_string32(uint8_t *ptr, const uint8_t *end, con
     if (ptr + 4 + length > end || !str)
         return NULL;
 
-    ptr = write_uint32_be(ptr, end, length);
+    ptr = mfa_write_uint32(ptr, end, length);
     memcpy(ptr, str, length);
 
     return ptr + length;
@@ -131,7 +131,7 @@ uint8_t *amf0_write_number(uint8_t *ptr, const uint8_t *end, double value)
 
     *ptr++ = AMF0_NUMBER;
 
-    return write_double_be(ptr, end, value);
+    return mfa_write_double(ptr, end, value);
 }
 
 uint8_t *amf0_write_boolean(uint8_t *ptr, const uint8_t *end, uint8_t value)
@@ -204,7 +204,7 @@ uint8_t *amf0_write_reference(uint8_t *ptr, const uint8_t *end, uint16_t referen
 
     *ptr++ = AMF0_REFERENCE;
 
-    return write_uint16_be(ptr, end, reference);
+    return mfa_write_uint16(ptr, end, reference);
 }
 
 uint8_t *amf0_write_ecma_array(uint8_t *ptr, const uint8_t *end, struct amf_object_item_t *item)
@@ -217,7 +217,7 @@ uint8_t *amf0_write_ecma_array(uint8_t *ptr, const uint8_t *end, struct amf_obje
     *ptr++ = AMF0_ECMA_ARRAY;
 
     // associative-count: 4 bytes
-    ptr = write_uint32_be(ptr, end, item->size);
+    ptr = mfa_write_uint32(ptr, end, item->size);
 
     for (i = 0; i < item->size; i++) {
         struct amf_object_item_t *current_item = ((struct amf_object_item_t *) item->value) + i;
@@ -255,7 +255,7 @@ uint8_t *amf0_write_strict_array(uint8_t *ptr, const uint8_t *end, struct amf_ob
     *ptr++ = AMF0_STRICT_ARRAY;
 
     // associative-count: 4 bytes
-    ptr = write_uint32_be(ptr, end, item->size);
+    ptr = mfa_write_uint32(ptr, end, item->size);
 
     for (i = 0; i < item->size; i++) {
         struct amf_object_item_t *current_item = ((struct amf_object_item_t *) item->value) + i;
@@ -274,8 +274,8 @@ uint8_t *amf0_write_date(uint8_t *ptr, const uint8_t *end, double milliseconds, 
 
     *ptr++ = AMF0_DATE;
 
-    ptr = write_double_be(ptr, end, milliseconds);
-    ptr = write_uint16_be(ptr, end, timezone);
+    ptr = mfa_write_double(ptr, end, milliseconds);
+    ptr = mfa_write_uint16(ptr, end, timezone);
 
     return ptr;
 }

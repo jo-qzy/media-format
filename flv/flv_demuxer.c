@@ -6,7 +6,7 @@
 #include <flv/flv_header.h>
 #include <flv/flv_type.h>
 #include <flv/mpeg4_aac.h>
-#include <flv/mpeg4_avc.h>
+#include <flv/h264.h>
 
 #include <memory.h>
 #include <stdlib.h>
@@ -21,7 +21,7 @@ struct flv_demuxer_t
 
     union
     {
-        mpeg4_avc_t avc;
+        h264_config_t avc;
     } video;
 
     union
@@ -120,22 +120,14 @@ static int flv_demuxer_video(flv_demuxer_t *demuxer, const uint8_t *data, uint32
                 // ISO/IEC 14496-15: AVCDecoderConfigurationRecord
                 // ISO/IEC 14496-10: Sequence parameter set RBSP syntax
                 // ISO/IEC 14496-10: Picture parameter set RBSP syntax
-                if (-1 == mpeg4_decode_avc_decoder_configuration_record(&demuxer->video.avc, data + read_size,
+                if (-1 == h264_decode_extradata(&demuxer->video.avc, data + read_size,
                                                                         bytes - read_size))
                     return -1;
 
                 return 0;
-
-                // read_size = mpeg4_get_avc_decoder_configuration_record(&demuxer->video.avc, 0, demuxer->buffer,
-                //                                                        demuxer->capacity);
-                // if (read_size < 0)
-                //     return -1;
-                //
-                // return demuxer->handler(demuxer->param, FLV_VIDEO_AVCC, demuxer->buffer, read_size,
-                //                         timestamp + video_header.composition_time_offset, timestamp, 0);
             } else if (FLV_MEDIA_PACKET == video_header.avc_packet_type) {
                 // H.264 stream is AVCC format in flv, need transfer to Annex-B format
-                read_size = mpeg4_avcc_to_annexb(&demuxer->video.avc, data + read_size, bytes - read_size,
+                read_size = h264_avcc_to_annexb(&demuxer->video.avc, data + read_size, bytes - read_size,
                                                  demuxer->buffer, demuxer->capacity);
                 if (read_size < 0)
                     return -1;

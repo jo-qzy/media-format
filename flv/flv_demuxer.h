@@ -21,7 +21,7 @@ typedef struct flv_demuxer_t flv_demuxer_t;
 /// @param[in] pts audio/video presentation timestamp
 /// @param[in] dts audio/video decoding timestamp
 /// @param[in] flags 1-video keyframe, other-undefined
-/// @return 0-ok, other-error
+/// @return 0: ok, other: error
 typedef int (*flv_demuxer_handler)(void *param, int codec, const void *data, uint32_t bytes, uint32_t pts, uint32_t dts,
                                    int flags);
 
@@ -34,7 +34,7 @@ void flv_demuxer_destroy(flv_demuxer_t *demuxer);
 /// @param[in] data flv audio/video Stream, AudioTagHeader/VideoTagHeader + A/V Data
 /// @param[in] bytes data length in byte
 /// @param[in] timestamp milliseconds relative to the first tag(DTS)
-/// @return 0-ok, other-error
+/// @return 0: ok, other: error
 int flv_demuxer_input(flv_demuxer_t *demuxer, int tag_type, const void *data, uint32_t bytes, uint32_t timestamp);
 
 #ifdef __cplusplus

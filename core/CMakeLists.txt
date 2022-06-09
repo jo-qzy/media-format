@@ -1,4 +1,4 @@
-project(media_base)
+project(media_core)
 
 aux_source_directory(. SOURCES)
 

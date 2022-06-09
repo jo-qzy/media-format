@@ -2,9 +2,9 @@
 // Created by quzhenyu on 2022/6/7.
 //
 
-#include <base/data.h>
+#include <core/mfa_data.h>
 
-const uint8_t *read_uint16_be(const uint8_t *ptr, const uint8_t *end, uint16_t *val)
+const uint8_t *read_uint16(const uint8_t *ptr, const uint8_t *end, uint16_t *val)
 {
     if (ptr + 2 > end)
         return NULL;
@@ -14,7 +14,7 @@ const uint8_t *read_uint16_be(const uint8_t *ptr, const uint8_t *end, uint16_t *
     return ptr + 2;
 }
 
-const uint8_t *read_uint24_be(const uint8_t *ptr, const uint8_t *end, uint32_t *val)
+const uint8_t *mfa_read_uint24(const uint8_t *ptr, const uint8_t *end, uint32_t *val)
 {
     if (ptr + 3 > end)
         return NULL;
@@ -24,7 +24,7 @@ const uint8_t *read_uint24_be(const uint8_t *ptr, const uint8_t *end, uint32_t *
     return ptr + 3;
 }
 
-const uint8_t *read_uint32_be(const uint8_t *ptr, const uint8_t *end, uint32_t *val)
+const uint8_t *mfa_read_uint32(const uint8_t *ptr, const uint8_t *end, uint32_t *val)
 {
     if (ptr + 4 > end)
         return NULL;
@@ -34,7 +34,7 @@ const uint8_t *read_uint32_be(const uint8_t *ptr, const uint8_t *end, uint32_t *
     return ptr + 4;
 }
 
-uint8_t *write_uint16_be(uint8_t *ptr, const uint8_t *end, uint16_t val)
+uint8_t *mfa_write_uint16(uint8_t *ptr, const uint8_t *end, uint16_t val)
 {
     if (ptr + 2 > end)
         return NULL;
@@ -45,7 +45,7 @@ uint8_t *write_uint16_be(uint8_t *ptr, const uint8_t *end, uint16_t val)
     return ptr + 2;
 }
 
-uint8_t *write_uint24_be(uint8_t *ptr, const uint8_t *end, uint32_t val)
+uint8_t *mfa_write_uint24(uint8_t *ptr, const uint8_t *end, uint32_t val)
 {
     if (ptr + 3 > end)
         return NULL;
@@ -57,7 +57,7 @@ uint8_t *write_uint24_be(uint8_t *ptr, const uint8_t *end, uint32_t val)
     return ptr + 3;
 }
 
-uint8_t *write_uint32_be(uint8_t *ptr, const uint8_t *end, uint32_t val)
+uint8_t *mfa_write_uint32(uint8_t *ptr, const uint8_t *end, uint32_t val)
 {
     if (ptr + 4 > end)
         return NULL;
@@ -70,7 +70,7 @@ uint8_t *write_uint32_be(uint8_t *ptr, const uint8_t *end, uint32_t val)
     return ptr + 4;
 }
 
-uint8_t *write_double_be(uint8_t *ptr, const uint8_t *end, double value)
+uint8_t *mfa_write_double(uint8_t *ptr, const uint8_t *end, double value)
 {
     uint8_t *double_ptr;
 

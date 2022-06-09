@@ -12,15 +12,13 @@
 extern "C" {
 #endif
 
-#include <flv/flv.h>
-
 typedef struct flv_writer_t flv_writer_t;
 
 /// @param[in] param User parameters
 /// @param[in] vec flv data vector
 /// @param[in] len flv data length
-/// @return 0-ok, other-error
-typedef int (*flv_writer_handler)(void *param, flv_vec_t *vec, uint32_t len);
+/// @return MFA_OK: ok, other: error
+typedef int (*flv_writer_handler)(void *param, vec_t *vec, uint32_t len);
 
 flv_writer_t *flv_writer_create(void *param, int audio, int video, flv_writer_handler handler);
 

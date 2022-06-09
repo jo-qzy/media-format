@@ -17,7 +17,7 @@ typedef struct flv_handler_t
     /// @param[in] data flv tag + audio/video data
     /// @param[in] bytes data length
     /// @param[in] timestamp timestamp in milliseconds
-    /// @return 0-ok, other-error
+    /// @return 0: ok, other: error
     int (*on_frame_write)(void *param, int type, const void *data, uint32_t bytes, uint32_t timestamp);
 
     /// @param[in] param user-defined parameter
@@ -27,14 +27,8 @@ typedef struct flv_handler_t
     /// @param[in] pts audio/video presentation timestamp
     /// @param[in] dts audio/video decoding timestamp
     /// @param[in] key 1-video keyframe, other-undfined
-    /// @return 0-ok, other-error
+    /// @return 0: ok, other: error
     int (*on_packet)(void *param, int codec, const void *data, uint32_t bytes, uint32_t pts, uint32_t dts, int key);
 } flv_handler_t;
-
-typedef struct flv_vec_t
-{
-    const uint8_t *data;
-    uint32_t       bytes;
-} flv_vec_t;
 
 #endif // FLV_H

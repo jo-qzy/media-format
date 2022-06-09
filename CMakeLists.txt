@@ -15,8 +15,8 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME})
 
 include_directories(.)
 
-# build base
-add_subdirectory(base)
+# build core
+add_subdirectory(core)
 
 if (ENABLE_FLV)
     add_subdirectory(flv)

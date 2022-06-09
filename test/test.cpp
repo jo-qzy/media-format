@@ -5,7 +5,7 @@ int flv_demux_test(const std::string &flv_path);
 
 int main()
 {
-    amf0_test("res/flv/");
+    // amf0_test("res/rtmp_amf0_stream");
     flv_demux_test("res/LetHerGo.flv");
 
     return 0;

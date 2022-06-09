@@ -2,11 +2,12 @@
 // Created by BoringWednesday on 2021/8/9.
 //
 
-#include <flv/flv_writer.h>
-#include <flv/flv_header.h>
-
 #include <stdlib.h>
 #include <string.h>
+
+#include <core/mfa_core.h>
+#include <flv/flv_header.h>
+#include <flv/flv_writer.h>
 
 #define FLV_HEADER_LENGTH     9
 #define FLV_TAG_HEADER_LENGTH 11
@@ -19,7 +20,7 @@ typedef struct flv_writer_t
 
 static int write_header(flv_writer_t *flv, int audio, int video)
 {
-    flv_vec_t vec;
+    vec_t vec;
     uint8_t   header[FLV_HEADER_LENGTH + 4]; // Include 4 bytes PreviousTagSize
 
     flv_header_write(audio, video, header, FLV_HEADER_LENGTH);
@@ -60,7 +61,7 @@ void flv_writer_destroy(flv_writer_t *flv)
 int flv_writer_input(flv_writer_t *flv, int type, uint32_t timestamp, const void *data, uint32_t bytes)
 {
     flv_tag_t tag;
-    flv_vec_t vec[3];
+    vec_t vec[3];
     uint8_t   tag_buf[FLV_TAG_HEADER_LENGTH + 4];
 
     memset(&tag, 0, sizeof(tag));

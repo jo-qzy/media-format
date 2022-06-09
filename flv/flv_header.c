@@ -2,12 +2,12 @@
 // Created by BoringWednesday on 2021/8/10.
 //
 
-#include <base/data.h>
-#include <flv/flv_header.h>
-#include <flv/flv_type.h>
-
 #include <assert.h>
 #include <string.h>
+
+#include <core/mfa_core.h>
+#include <flv/flv_header.h>
+#include <flv/flv_type.h>
 
 int flv_header_read(flv_header_t *header, const uint8_t *buf, uint32_t len)
 {
@@ -20,7 +20,7 @@ int flv_header_read(flv_header_t *header, const uint8_t *buf, uint32_t len)
     header->version = buf[3];
     header->audio   = (buf[4] >> 2) & 0x01;
     header->video   = buf[4] & 0x01;
-    read_uint32_be(buf + 5, buf + len, &header->data_offset);
+    mfa_read_uint32(buf + 5, buf + len, &header->data_offset);
 
     if (1 == header->version && FLV_HEADER_SIZE != header->data_offset)
         return -1;
@@ -39,7 +39,7 @@ int flv_header_write(int audio, int video, uint8_t *buf, uint32_t len)
     buf[2] = 'V';
     buf[3] = 0x01;
     buf[4] = ((audio ? 1 : 0) << 2) | (video ? 1 : 0);
-    write_uint32_be(buf + 5, buf + len, FLV_HEADER_SIZE);
+    mfa_write_uint32(buf + 5, buf + len, FLV_HEADER_SIZE);
 
     return FLV_HEADER_SIZE;
 }
@@ -56,14 +56,14 @@ int flv_tag_read(flv_tag_t *tag, const uint8_t *buf, uint32_t len)
 
     tag->filter   = (buf[0] >> 5) & 0x01;
     tag->tag_type = buf[0] & 0x1F;
-    read_uint24_be(buf + 1, end, &tag->data_size);
-    read_uint24_be(buf + 4, end, &tag->timestamp);
+    mfa_read_uint24(buf + 1, end, &tag->data_size);
+    mfa_read_uint24(buf + 4, end, &tag->timestamp);
     if (0 != buf[7]) {
         // Read timestamp extended
         tag->timestamp |= buf[7] << 24;
     }
 
-    read_uint24_be(buf + 8, end, &tag->stream_id);
+    mfa_read_uint24(buf + 8, end, &tag->stream_id);
 
     assert(0 == tag->stream_id);
     assert(FLV_VIDEO == tag->tag_type || FLV_AUDIO == tag->tag_type || FLV_SCRIPT == tag->tag_type);
@@ -84,10 +84,10 @@ int flv_tag_write(const flv_tag_t *tag, uint8_t *buf, uint32_t len)
     end = buf + len;
 
     buf[0] = ((tag->filter & 0x01) << 5) | (tag->tag_type & 0x1F);
-    write_uint24_be(buf + 1, end, tag->data_size);
-    write_uint24_be(buf + 4, end, tag->timestamp);
+    mfa_write_uint24(buf + 1, end, tag->data_size);
+    mfa_write_uint24(buf + 4, end, tag->timestamp);
     buf[5] = (tag->timestamp >> 24) & 0xFF;
-    write_uint24_be(buf + 8, end, tag->stream_id);
+    mfa_write_uint24(buf + 8, end, tag->stream_id);
 
     return FLV_TAG_HEADER_SIZE;
 }
@@ -160,7 +160,7 @@ int flv_video_tag_header_read(flv_video_tag_header_t *video_tag, const uint8_t *
         assert(video_tag->avc_packet_type <= 2);
 
         // Transfer Signed INT24 to Signed INT32
-        read_uint24_be(buf + 2, buf + len, &composition_time_offset);
+        mfa_read_uint24(buf + 2, buf + len, &composition_time_offset);
         composition_time_offset            = (composition_time_offset + 0xFF800000) ^ 0xFF800000;
         video_tag->composition_time_offset = (int32_t) composition_time_offset;
 
@@ -187,7 +187,7 @@ int flv_video_tag_header_write(const flv_video_tag_header_t *video_tag, uint8_t 
         // Transfer Signed INT32 to Signed INT24
         composition_time_offset = (uint32_t) video_tag->composition_time_offset;
         composition_time_offset = (composition_time_offset ^ 0xFF800000) - 0xFF800000;
-        write_uint24_be(buf + 2, buf + len, composition_time_offset);
+        mfa_write_uint24(buf + 2, buf + len, composition_time_offset);
 
         return 5;
     }
@@ -197,10 +197,10 @@ int flv_video_tag_header_write(const flv_video_tag_header_t *video_tag, uint8_t 
 
 int flv_tag_size_read(const uint8_t *buf, uint32_t len, uint32_t *tag_size)
 {
-    return read_uint32_be(buf, buf + len, tag_size) ? 4 : 0;
+    return mfa_read_uint32(buf, buf + len, tag_size) ? 4 : 0;
 }
 
 int flv_tag_size_write(uint8_t *buf, uint32_t len, uint32_t tag_size)
 {
-    return write_uint32_be(buf, buf + len, tag_size) ? 4 : 0;
+    return mfa_write_uint32(buf, buf + len, tag_size) ? 4 : 0;
 }
