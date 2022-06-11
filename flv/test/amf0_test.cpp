@@ -11,7 +11,7 @@
 using namespace std;
 
 #define AMF_OBJECT_ITEM_VALUE(item, amf_type, amf_name, amf_value, amf_size) \
-    { item.type = amf_type; item.name = amf_name; item.value = amf_value; item.size = amf_size; }
+    { (item).type = amf_type; (item).name = amf_name; (item).value = amf_value; (item).size = amf_size; }
 
 struct rtmp_result_t
 {
@@ -24,7 +24,7 @@ struct rtmp_result_t
 
 int amf0_test(const std::string &amf0_file)
 {
-    rtmp_result_t result{};
+    rtmp_result_t result = {};
 
     amf_object_item_t items[4];
     amf_object_item_t object_item[3];

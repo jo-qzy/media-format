@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
+
 project(mfa)
 
 option(ENABLE_FLV "enable flv" ON)
