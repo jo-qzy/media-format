@@ -47,7 +47,7 @@ int mfa_buf_size(mfa_buf_t *buf);
 /// Free size in buffer can write
 /// @param[in] buf buffer pointer
 /// @return > 0: buffer size, MFA_ERROR: buffer invalid
-int mfa_buf_free_size(mfa_buf_t *buf);
+int mfa_buf_avaliable_size(mfa_buf_t *buf);
 
 /// Buffer capacity
 /// @param[in] buf buffer pointer

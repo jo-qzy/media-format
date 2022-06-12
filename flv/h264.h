@@ -43,7 +43,7 @@ typedef struct h264_config_t
         const uint8_t *data;
     } sps_ext[255];
 
-    uint8_t  data[1024];
+    uint8_t  data[4 * 1024];
     uint32_t data_size;
 } h264_config_t;
 
@@ -61,6 +61,9 @@ enum h264_nal_type_t
     AVCC_EXT_DATA = 0, // sequence header
 };
 
+/* API for AVCC and Annex-B */
+int h264_get_nal_type(h264_config_t *avc, int annexb, const void *data, uint32_t bytes);
+
 /* API for AVCC format */
 int h264_decode_extradata(h264_config_t *avc, const void *data, uint32_t bytes);
 int h264_extradata_size(h264_config_t *avc);
@@ -73,7 +76,7 @@ int h264_decode_sps_pps(h264_config_t *avc, const void *data, uint32_t bytes);
 int h264_sps_pps_size(h264_config_t *avc);
 int h264_get_sps_pps(h264_config_t *avc, uint8_t *data, uint32_t bytes);
 int h264_annexb_to_avcc(h264_config_t *avc, const void *in_data, uint32_t in_bytes, uint8_t *out_data,
-                         uint32_t out_bytes);
+                         uint32_t out_bytes, int *update);
 
 /* API for AVCC and Annex-B bitstream */
 typedef int (*h264_bitstream_handler)(void *param, int type, const uint8_t *data, uint32_t bytes);

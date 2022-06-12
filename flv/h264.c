@@ -21,6 +21,34 @@ struct h264_bitstream_t
     h264_bitstream_handler handler;
 };
 
+static const uint8_t *h264_annexb_startcode(const uint8_t *data, uint32_t bytes)
+{
+    for (uint32_t i = 0; i + 3 < bytes; i++) {
+        if (0x00 == data[i] && 0x00 == data[i + 1] && 0x01 == data[i + 2])
+            return data + i + 3;
+    }
+
+    return NULL;
+}
+
+int h264_get_nal_type(h264_config_t *avc, int annexb, const void *data, uint32_t bytes)
+{
+    if (annexb) {
+        const uint8_t *cur;
+
+        cur = h264_annexb_startcode(data, bytes);
+        if (!cur || cur - (uint8_t *) data > 4)
+            return MFA_ERROR;
+
+        return cur[0] & 0x1F;
+    } else {
+        if (!avc || avc->length_size_minus_one + 1 > bytes)
+            return MFA_ERROR;
+
+        return ((uint8_t *) data)[avc->length_size_minus_one + 1] & 0x1F;
+    }
+}
+
 /*
 ISO/IEC 14496-15:2017(E)
 5.3.3.1 AVC decoder configuration record
@@ -492,17 +520,6 @@ int h264_get_sps_pps(h264_config_t *avc, uint8_t *data, uint32_t bytes)
     return (int) (buf.last - buf.start);
 }
 
-
-static const uint8_t *h264_annexb_startcode(const uint8_t *data, uint32_t bytes)
-{
-    for (uint32_t i = 0; i + 3 < bytes; i++) {
-        if (0x00 != data[i] && 0x00 != data[i + 1] && 0x01 == data[i + 2])
-            return data + i + 3;
-    }
-
-    return NULL;
-}
-
 static int h264_annexb_to_avcc_handler(void *param, int type, const uint8_t *data, uint32_t bytes)
 {
     (void) param;
@@ -516,27 +533,27 @@ static int h264_annexb_to_avcc_handler(void *param, int type, const uint8_t *dat
 }
 
 int h264_annexb_to_avcc(h264_config_t *avc, const void *in_data, uint32_t in_bytes, uint8_t *out_data,
-                         uint32_t out_bytes)
+                         uint32_t out_bytes, int *update)
 {
     h264_bitstream_t bitstream;
     mfa_buf_t        buf;
     int              ret;
-    int              update = 0;
 
     buf.start         = out_data;
     buf.end           = out_data + out_bytes;
     buf.pos           = out_data;
     buf.last          = out_data;
-    bitstream.param   = &update;
+    bitstream.param   = update;
     bitstream.avc     = avc;
     bitstream.buf     = &buf;
     bitstream.handler = h264_annexb_to_avcc_handler;
 
+    printf("parse stream: %d\n", out_bytes);
     ret = h264_annexb_to_avcc_bitstream(&bitstream, in_data, in_bytes);
     if (MFA_OK != ret)
         return MFA_ERROR;
 
-    return update != 1 ? mfa_buf_size(&buf) : MFA_AGAIN;
+    return mfa_buf_size(&buf);
 }
 
 h264_bitstream_t *h264_bitstream_create(void *param, h264_config_t *avc, h264_bitstream_handler handler)
@@ -603,8 +620,10 @@ int h264_annexb_to_avcc_bitstream(h264_bitstream_t *bitstream, const void *data,
 
     end = (const uint8_t *) data + bytes;
 
+    printf("bytes %d\n", bytes);
     for (cur = h264_annexb_startcode(data, bytes); cur; cur = next_nalu) {
         next_nalu = h264_annexb_startcode(cur, bytes - (uint32_t) (cur - (uint8_t *) data));
+        printf("loop: %p %p %ld %ld\n", cur, next_nalu, next_nalu - (uint8_t *) data, next_nalu - cur);
 
         // start code may have 4 bytes
         if (next_nalu)
@@ -628,7 +647,8 @@ int h264_annexb_to_avcc_bitstream(h264_bitstream_t *bitstream, const void *data,
                     if (MFA_OK != h264_bitstream_check_buf(bitstream, ret))
                         return MFA_ERROR;
 
-                    ret = h264_get_extradata(bitstream->avc, bitstream->buf->last, mfa_buf_free_size(bitstream->buf));
+                    ret = h264_get_extradata(bitstream->avc, bitstream->buf->last,
+                                             mfa_buf_avaliable_size(bitstream->buf));
                     if (MFA_ERROR == ret)
                         return MFA_ERROR;
 

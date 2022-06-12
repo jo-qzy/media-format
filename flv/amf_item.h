@@ -19,6 +19,6 @@ struct amf_object_item_t
 };
 
 struct amf_object_item_t *amf_item_create();
-void                      amf_item_destroy(struct amf_object_item_t *item, int version);
+void                      amf_item_free(struct amf_object_item_t *item, int version);
 
 #endif // LIBAMF_ITEM_H

@@ -9,6 +9,7 @@
 #define MFA_ERROR -1
 #define MFA_AGAIN -2
 
+#include <stdio.h>
 #include <core/mfa_buf.h>
 #include <core/mfa_data.h>
 

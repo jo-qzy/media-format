@@ -30,7 +30,7 @@ struct flv_demuxer_t
     } audio;
 };
 
-flv_demuxer_t *flv_demuxer_create(flv_demuxer_handler handler, void *param)
+flv_demuxer_t *flv_demuxer_create(void *param, flv_demuxer_handler handler)
 {
     struct flv_demuxer_t *demuxer;
 
@@ -45,7 +45,7 @@ flv_demuxer_t *flv_demuxer_create(flv_demuxer_handler handler, void *param)
     return demuxer;
 }
 
-void flv_demuxer_destroy(flv_demuxer_t *demuxer)
+void flv_demuxer_free(flv_demuxer_t *demuxer)
 {
     if (!demuxer)
         return;
@@ -116,7 +116,7 @@ static int flv_demuxer_video(flv_demuxer_t *demuxer, const uint8_t *data, uint32
 
     switch (video_header.codec_id) {
         case FLV_VIDEO_H264:
-            if (FLV_SEQUENCE_HEADER == video_header.avc_packet_type) {
+            if (FLV_SEQUENCE_HEADER == video_header.packet_type) {
                 // ISO/IEC 14496-15: AVCDecoderConfigurationRecord
                 // ISO/IEC 14496-10: Sequence parameter set RBSP syntax
                 // ISO/IEC 14496-10: Picture parameter set RBSP syntax
@@ -125,7 +125,7 @@ static int flv_demuxer_video(flv_demuxer_t *demuxer, const uint8_t *data, uint32
                     return -1;
 
                 return 0;
-            } else if (FLV_MEDIA_PACKET == video_header.avc_packet_type) {
+            } else if (FLV_MEDIA_PACKET == video_header.packet_type) {
                 // H.264 stream is AVCC format in flv, need transfer to Annex-B format
                 read_size = h264_avcc_to_annexb(&demuxer->video.avc, data + read_size, bytes - read_size,
                                                  demuxer->buffer, demuxer->capacity);
@@ -133,13 +133,13 @@ static int flv_demuxer_video(flv_demuxer_t *demuxer, const uint8_t *data, uint32
                     return -1;
 
                 return demuxer->handler(demuxer->param, FLV_VIDEO_H264, demuxer->buffer, read_size,
-                                        timestamp + video_header.composition_time_offset, timestamp,
+                                        timestamp + video_header.cts, timestamp,
                                         FLV_KEY_FRAME == video_header.frame_type ? 1 : 0);
             }
     }
 
     return demuxer->handler(demuxer->param, video_header.codec_id, data + read_size, bytes - read_size,
-                            timestamp + video_header.composition_time_offset, timestamp,
+                            timestamp + video_header.cts, timestamp,
                             (FLV_KEY_FRAME == video_header.frame_type) ? 1 : 0);
 }
 
