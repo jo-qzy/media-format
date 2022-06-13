@@ -75,7 +75,7 @@ int mfa_buf_size(mfa_buf_t *buf)
     return buf ? (int) (buf->last - buf->pos) : -1;
 }
 
-int mfa_buf_free_size(mfa_buf_t *buf)
+int mfa_buf_avaliable_size(mfa_buf_t *buf)
 {
     return buf ? (int) (buf->end - buf->last) : -1;
 }

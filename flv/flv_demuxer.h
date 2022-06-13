@@ -25,9 +25,9 @@ typedef struct flv_demuxer_t flv_demuxer_t;
 typedef int (*flv_demuxer_handler)(void *param, int codec, const void *data, uint32_t bytes, uint32_t pts, uint32_t dts,
                                    int flags);
 
-flv_demuxer_t *flv_demuxer_create(flv_demuxer_handler handler, void *param);
+flv_demuxer_t *flv_demuxer_create(void *param, flv_demuxer_handler handler);
 
-void flv_demuxer_destroy(flv_demuxer_t *demuxer);
+void flv_demuxer_free(flv_demuxer_t *demuxer);
 
 /// Input FLV Audio/Video Stream
 /// @param[in] type 8-audio, 9-video, 18-script (see more flv-proto.h)

@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <core/mfa_core.h>
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -20,9 +22,11 @@ typedef struct flv_writer_t flv_writer_t;
 /// @return MFA_OK: ok, other: error
 typedef int (*flv_writer_handler)(void *param, vec_t *vec, uint32_t len);
 
-flv_writer_t *flv_writer_create(void *param, int audio, int video, flv_writer_handler handler);
+flv_writer_t *flv_writer_create(const char *filename, int audio, int video);
 
-void flv_writer_destroy(flv_writer_t *flv);
+flv_writer_t *flv_writer_create2(void *param, int audio, int video, flv_writer_handler handler);
+
+void flv_writer_free(flv_writer_t *flv);
 
 int flv_writer_input(flv_writer_t *flv, int type, uint32_t timestamp, const void *data, uint32_t bytes);
 

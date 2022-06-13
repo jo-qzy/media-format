@@ -50,10 +50,10 @@ typedef struct flv_audio_tag_header_t
 
 typedef struct flv_video_tag_header_t
 {
-    uint8_t frame_type;              // 1-key frame, 2-inter frame, 3-5 can see in doc
-    uint8_t codec_id;                // 7-AVC
-    uint8_t avc_packet_type;         // 0-AVC sequence header, 1-AVC NALU, 2-AVC end of sequence
-    int32_t composition_time_offset; // CTS
+    uint8_t frame_type;  // 1-key frame, 2-inter frame, 3-5 can see in doc
+    uint8_t codec_id;    // 7-AVC
+    uint8_t packet_type; // 0-AVC sequence header, 1-AVC NALU, 2-AVC end of sequence
+    int32_t cts;         // CTS
 } flv_video_tag_header_t;
 
 int flv_header_read(flv_header_t *header, const uint8_t *buf, uint32_t len);

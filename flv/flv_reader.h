@@ -24,9 +24,14 @@ typedef int (*flv_reader_handler)(void *param, void *buf, uint32_t len);
 /// @param[in] handler flv data read handler, must available
 /// @param[in] param user-defined parameter
 /// @return NULL: error, other: success
-flv_reader_t *flv_reader_create(flv_reader_handler handler, void *param);
+flv_reader_t *flv_reader_create(const char *filename);
 
-void flv_reader_destroy(flv_reader_t *reader);
+/// @param[in] handler flv data read handler, must available
+/// @param[in] param user-defined parameter
+/// @return NULL: error, other: success
+flv_reader_t *flv_reader_create2(void *param, flv_reader_handler handler);
+
+void flv_reader_free(flv_reader_t *reader);
 
 /// Read flv data, return one flv packet
 /// @param[out] tagtype 8: audio, 9: video, 18: script data

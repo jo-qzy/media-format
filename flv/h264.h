@@ -43,7 +43,7 @@ typedef struct h264_config_t
         const uint8_t *data;
     } sps_ext[255];
 
-    uint8_t  data[1024];
+    uint8_t  data[4 * 1024];
     uint32_t data_size;
 } h264_config_t;
 
@@ -51,6 +51,9 @@ enum h264_nal_type_t
 {
     // For Annex-B and AVCC
     H264_NAL_SLICE = 1, // Coded slice of a non-IDR picture
+    H264_NAL_DPA   = 2, // Slice data partition A layer
+    H264_NAL_DPB   = 3, // Slice data partition B layer
+    H264_NAL_DPC   = 4, // Slice data partition C layer
     H264_NAL_IDR   = 5, // Coded slice of an IDR picture
     H264_NAL_SEI   = 6, // Supplemental enhancement information
     H264_NAL_SPS   = 7, // Sequence parameter set
@@ -61,31 +64,26 @@ enum h264_nal_type_t
     AVCC_EXT_DATA = 0, // sequence header
 };
 
+typedef int (*h264_bitstream_handler)(void *param, const uint8_t *data, uint32_t bytes);
+
+/* API for AVCC and Annex-B */
+int h264_get_nal_type(h264_config_t *avc, int annexb, const void *data, uint32_t bytes);
+int h264_sps_pps_size(h264_config_t *avc, int annexb);
+int h264_get_sps_pps(h264_config_t *avc, int annexb, uint8_t *data, uint32_t bytes);
+
 /* API for AVCC format */
 int h264_decode_extradata(h264_config_t *avc, const void *data, uint32_t bytes);
 int h264_extradata_size(h264_config_t *avc);
 int h264_get_extradata(h264_config_t *avc, uint8_t *data, uint32_t bytes);
+// int h264_avcc_bitstream(h264_config_t *avc, void *param, h264_bitstream_handler handler, const void *data,
+//                         uint32_t bytes);
 int h264_avcc_to_annexb(h264_config_t *avc, const void *in_data, uint32_t in_bytes, uint8_t *out_data,
                         uint32_t out_bytes);
 
 /* API for Annex-B format */
 int h264_decode_sps_pps(h264_config_t *avc, const void *data, uint32_t bytes);
-int h264_sps_pps_size(h264_config_t *avc);
-int h264_get_sps_pps(h264_config_t *avc, uint8_t *data, uint32_t bytes);
 int h264_annexb_to_avcc(h264_config_t *avc, const void *in_data, uint32_t in_bytes, uint8_t *out_data,
-                         uint32_t out_bytes);
-
-/* API for AVCC and Annex-B bitstream */
-typedef int (*h264_bitstream_handler)(void *param, int type, const uint8_t *data, uint32_t bytes);
-
-typedef struct h264_bitstream_t h264_bitstream_t;
-
-h264_bitstream_t *h264_bitstream_create(void *param, h264_config_t *avc, h264_bitstream_handler handler);
-
-void h264_bitstream_free(h264_bitstream_t *avc_bitstream);
-
-int h264_annexb_to_avcc_bitstream(h264_bitstream_t *bitstream, const void *data, uint32_t bytes);
-
-int h264_avcc_to_annexb_bitstream(h264_bitstream_t *bitstream, const void *data, uint32_t bytes);
+                        uint32_t out_bytes, int *update, int *vcl);
+int h264_annexb_bitstream(void *param, h264_bitstream_handler handler, const void *data, uint32_t bytes);
 
 #endif // LIBFLV_MPEG4_AVC_H

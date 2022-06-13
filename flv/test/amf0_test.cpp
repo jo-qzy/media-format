@@ -54,11 +54,6 @@ int amf0_test(const std::string &amf0_file)
         return -1;
     }
 
-    // printf("item: %s\n", result.onStatus);
-    // printf("item: %s\n", result.level);
-    // printf("item: %s\n", result.code);
-    // printf("item: %s\n", result.description);
-
     // Test AMF write
     ptr = out_amf_buffer;
     end = out_amf_buffer + 1024;

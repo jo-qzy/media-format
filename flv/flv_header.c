@@ -86,7 +86,7 @@ int flv_tag_write(const flv_tag_t *tag, uint8_t *buf, uint32_t len)
     buf[0] = ((tag->filter & 0x01) << 5) | (tag->tag_type & 0x1F);
     mfa_write_uint24(buf + 1, end, tag->data_size);
     mfa_write_uint24(buf + 4, end, tag->timestamp);
-    buf[5] = (tag->timestamp >> 24) & 0xFF;
+    buf[7] = (tag->timestamp >> 24) & 0xFF;
     mfa_write_uint24(buf + 8, end, tag->stream_id);
 
     return FLV_TAG_HEADER_SIZE;
@@ -141,7 +141,7 @@ int flv_audio_tag_header_write(const flv_audio_tag_header_t *audio_tag, uint8_t 
 
 int flv_video_tag_header_read(flv_video_tag_header_t *video_tag, const uint8_t *buf, uint32_t len)
 {
-    uint32_t composition_time_offset;
+    uint32_t cts;
 
     if (!video_tag || !buf || len < 1) {
         return -1;
@@ -156,13 +156,13 @@ int flv_video_tag_header_read(flv_video_tag_header_t *video_tag, const uint8_t *
         if (len < 5)
             return -1;
 
-        video_tag->avc_packet_type = buf[1];
-        assert(video_tag->avc_packet_type <= 2);
+        video_tag->packet_type = buf[1];
+        assert(video_tag->packet_type <= 2);
 
         // Transfer Signed INT24 to Signed INT32
-        mfa_read_uint24(buf + 2, buf + len, &composition_time_offset);
-        composition_time_offset            = (composition_time_offset + 0xFF800000) ^ 0xFF800000;
-        video_tag->composition_time_offset = (int32_t) composition_time_offset;
+        mfa_read_uint24(buf + 2, buf + len, &cts);
+        cts            = (cts + 0xFF800000) ^ 0xFF800000;
+        video_tag->cts = (int32_t) cts;
 
         return 5;
     }
@@ -172,7 +172,7 @@ int flv_video_tag_header_read(flv_video_tag_header_t *video_tag, const uint8_t *
 
 int flv_video_tag_header_write(const flv_video_tag_header_t *video_tag, uint8_t *buf, uint32_t len)
 {
-    uint32_t composition_time_offset;
+    uint32_t cts;
 
     if (!video_tag || !buf || len < 1 + (uint32_t) (FLV_VIDEO_H264 == video_tag->codec_id ? 4 : 0))
         return -1;
@@ -182,12 +182,12 @@ int flv_video_tag_header_write(const flv_video_tag_header_t *video_tag, uint8_t 
     buf[0] = ((video_tag->frame_type & 0x0F) << 4) | (video_tag->codec_id & 0x0F);
 
     if (FLV_VIDEO_H264 == video_tag->codec_id) {
-        buf[1] = video_tag->avc_packet_type;
+        buf[1] = video_tag->packet_type;
 
         // Transfer Signed INT32 to Signed INT24
-        composition_time_offset = (uint32_t) video_tag->composition_time_offset;
-        composition_time_offset = (composition_time_offset ^ 0xFF800000) - 0xFF800000;
-        mfa_write_uint24(buf + 2, buf + len, composition_time_offset);
+        cts = (uint32_t) video_tag->cts;
+        cts = (cts ^ 0xFF800000) - 0xFF800000;
+        mfa_write_uint24(buf + 2, buf + len, cts);
 
         return 5;
     }
