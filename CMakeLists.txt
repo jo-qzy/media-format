@@ -5,16 +5,25 @@ set(CMAKE_CXX_STANDARD 11)
 
 project(mfa)
 
+option(ENABLE_LOG "enable log print" OFF)
 option(ENABLE_FLV "enable flv" ON)
 option(BUILD_STATIC "build static library" ON)
 option(BUILD_SHARED "build shared library" OFF)
 option(BUILD_DEMO "build example executable file" ON)
 option(BUILD_TEST "build test executable file" OFF)
 
+# pre definition
 set(MFA_OBJS)
 set(MFA_HEADER_DIRS)
 set(MFA_TEST_OBJS)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME})
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(MFA_LIBRARY lib${PROJECT_NAME})
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+else ()
+    set(MFA_LIBRARY ${PROJECT_NAME})
+endif ()
 
 include_directories(.)
 
@@ -26,14 +35,7 @@ if (ENABLE_FLV)
     list(APPEND MFA_HEADER_DIRS flv)
 endif ()
 
-# build libmedia
-if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set(MFA_LIBRARY lib${PROJECT_NAME})
-    add_compile_options(/wd4996)
-else ()
-    set(MFA_LIBRARY ${PROJECT_NAME})
-endif ()
-
+# build libmfa
 if (BUILD_SHARED)
     add_library(${MFA_LIBRARY} SHARED ${MFA_OBJS})
 else()
