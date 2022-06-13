@@ -1,6 +1,12 @@
 project(media_core)
 
-aux_source_directory(. SOURCES)
+set(SOURCES
+    mfa_buf.c
+    mfa_data.c)
+
+if (ENABLE_LOG)
+    list(APPEND SOURCES mfa_log.c)
+endif ()
 
 add_library(${PROJECT_NAME} OBJECT ${SOURCES})
 list(APPEND MFA_OBJS $<TARGET_OBJECTS:${PROJECT_NAME}>)

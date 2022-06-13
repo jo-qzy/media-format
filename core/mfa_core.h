@@ -11,5 +11,6 @@
 
 #include <core/mfa_buf.h>
 #include <core/mfa_data.h>
+#include <core/mfa_log.h>
 
 #endif // MFA_CODE_H

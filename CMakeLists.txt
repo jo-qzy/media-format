@@ -25,6 +25,10 @@ else ()
     set(MFA_LIBRARY ${PROJECT_NAME})
 endif ()
 
+if (ENABLE_LOG)
+    add_compile_definitions(MLOG_ENABLE)
+endif()
+
 include_directories(.)
 
 # build core
