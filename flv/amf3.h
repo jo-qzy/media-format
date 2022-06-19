@@ -7,9 +7,7 @@
 
 #include <flv/amf_item.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 
 enum amf3_type_t
 {
@@ -46,8 +44,6 @@ uint8_t *amf3_write_byte_array(uint8_t *ptr, const uint8_t *end, const char *str
 
 const uint8_t *amf3_read(const uint8_t *data, const uint8_t *end, struct amf_object_item_t *item);
 
-#ifdef __cplusplus
-}
-#endif
+
 
 #endif // LIBAMF_AMF3_H

@@ -9,9 +9,11 @@
 
 enum MfaLogLevel
 {
-    MLOG_INFO   = 0,
-    MLOG_NOTION = 1,
-    MLOG_ERROR  = 2,
+    MLOG_DEBUG  = 0,
+    MLOG_INFO   = 1,
+    MLOG_NOTICE = 2,
+    MLOG_ERROR  = 3,
+    MLOG_FATAL  = 4,
 };
 
 void mfa_log(enum MfaLogLevel level, const char *format, ...);

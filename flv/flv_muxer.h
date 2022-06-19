@@ -21,8 +21,6 @@ int flv_muxer_aac(flv_muxer_t *muxer, const void *data, uint32_t bytes, uint32_t
 
 int flv_muxer_h264(flv_muxer_t *muxer, const void *data, uint32_t bytes, uint32_t pts, uint32_t dts);
 
-#if defined(__cplusplus)
-}
-#endif
+
 
 #endif // FLV_MUXER_H

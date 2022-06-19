@@ -8,12 +8,8 @@
 #ifndef FLV_HEADER_H
 #define FLV_HEADER_H
 
-#include <stddef.h>
-#include <stdint.h>
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
+#include <cstddef>
+#include <cstdint>
 
 #define FLV_HEADER_SIZE         9
 #define FLV_PREVIOUS_TAG_LENGTH 4
@@ -71,8 +67,6 @@ int flv_video_tag_header_write(const flv_video_tag_header_t *video_tag, uint8_t 
 int flv_tag_size_read(const uint8_t *buf, uint32_t len, uint32_t *tag_size);
 int flv_tag_size_write(uint8_t *buf, uint32_t len, uint32_t tag_size);
 
-#if defined(__cplusplus)
-}
-#endif
+
 
 #endif // FLV_HEADER_H

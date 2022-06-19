@@ -7,9 +7,7 @@
 
 #include <flv/amf_item.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 
 enum amf0_type_t
 {
@@ -69,8 +67,6 @@ const uint8_t *amf0_read_xml_document(const uint8_t *data, const uint8_t *end, s
 const uint8_t *amf0_read_typed_object(const uint8_t *data, const uint8_t *end, struct amf_object_item_t *item);
 const uint8_t *amf0_read_avmplus_object(const uint8_t *data, const uint8_t *end, struct amf_object_item_t *item);
 
-#ifdef __cplusplus
-}
-#endif
+
 
 #endif // LIBAMF_AMF0_H

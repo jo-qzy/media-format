@@ -43,8 +43,6 @@ void flv_reader_free(flv_reader_t *reader);
 int flv_reader_read(flv_reader_t *reader, int *tag_type, uint32_t *timestamp, uint32_t *taglen,
                     void *buffer, uint32_t bytes);
 
-#if defined(__cplusplus)
-}
-#endif
+
 
 #endif // FLV_READER_H

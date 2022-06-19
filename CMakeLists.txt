@@ -5,12 +5,13 @@ set(CMAKE_CXX_STANDARD 11)
 
 project(mfa)
 
-option(ENABLE_LOG "enable log print" OFF)
 option(ENABLE_FLV "enable flv" ON)
 option(BUILD_STATIC "build static library" ON)
 option(BUILD_SHARED "build shared library" OFF)
 option(BUILD_DEMO "build example executable file" ON)
 option(BUILD_TEST "build test executable file" OFF)
+option(ENABLE_LOG "enable log print" OFF)
+option(ENABLE_DEBUG "enable debug mode" ON)
 
 # pre definition
 set(MFA_OBJS)
@@ -24,6 +25,11 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 else ()
     set(MFA_LIBRARY ${PROJECT_NAME})
 endif ()
+
+if (ENABLE_DEBUG)
+    add_compile_definitions(MFA_DEBUG)
+    set(ENABLE_LOG ON)
+endif()
 
 if (ENABLE_LOG)
     add_compile_definitions(MLOG_ENABLE)

@@ -5,7 +5,8 @@
 #ifndef MFA_BUF_H
 #define MFA_BUF_H
 
-#include <stdint.h>
+#include <cstdint>
+#include <functional>
 
 #define MFA_BUF_DEFAULT_SIZE 1024
 
@@ -17,7 +18,7 @@ typedef struct mfa_buf_t
     uint8_t *pos;  // data start
     uint8_t *last; // data end
 
-    uint8_t recycled:1; // 0: cannot free, 1: can free
+    uint8_t recycled : 1; // 0: cannot free, 1: can free
 } mfa_buf_t;
 
 /// Alloc new buffer

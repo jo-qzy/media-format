@@ -30,8 +30,6 @@ void flv_writer_free(flv_writer_t *flv);
 
 int flv_writer_input(flv_writer_t *flv, int type, uint32_t timestamp, const void *data, uint32_t bytes);
 
-#if defined(__cplusplus)
-}
-#endif
+
 
 #endif // FLV_WRITER_H

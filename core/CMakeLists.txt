@@ -1,11 +1,12 @@
 project(media_core)
 
 set(SOURCES
-    mfa_buf.c
-    mfa_data.c)
+    media_io.cpp
+    mfa_buf.cpp
+    mfa_data.cpp)
 
 if (ENABLE_LOG)
-    list(APPEND SOURCES mfa_log.c)
+    list(APPEND SOURCES mfa_log.cpp)
 endif ()
 
 add_library(${PROJECT_NAME} OBJECT ${SOURCES})

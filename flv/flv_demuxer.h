@@ -5,11 +5,7 @@
 #ifndef FLV_DEMUXER_H
 #define FLV_DEMUXER_H
 
-#include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <cstdint>
 
 typedef struct flv_demuxer_t flv_demuxer_t;
 
@@ -36,9 +32,5 @@ void flv_demuxer_free(flv_demuxer_t *demuxer);
 /// @param[in] timestamp milliseconds relative to the first tag(DTS)
 /// @return 0: ok, other: error
 int flv_demuxer_input(flv_demuxer_t *demuxer, int tag_type, const void *data, uint32_t bytes, uint32_t timestamp);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // FLV_DEMUXER_H
